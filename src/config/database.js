@@ -1,99 +1,108 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const dbPath = process.env.DB_PATH || path.join(__dirname, '../../database/personnel.db');
+// PostgreSQL connection configuration
+const pool = new Pool({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 5432,
+  database: process.env.DB_NAME || 'hermes_db',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  max: 20, // Maximum number of clients in the pool
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
 
-let db = null;
+// Test connection on startup
+pool.on('connect', () => {
+  console.log('Connected to PostgreSQL database');
+});
+
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
+});
 
 /**
- * Get database connection (singleton pattern)
- * @returns {sqlite3.Database} Database instance
+ * Get database pool
+ * @returns {Pool} PostgreSQL pool instance
  */
 function getDatabase() {
-  if (!db) {
-    db = new sqlite3.Database(dbPath, (err) => {
-      if (err) {
-        console.error('Error connecting to database:', err.message);
-        throw err;
-      }
-      console.log('Connected to the personnel database.');
-    });
-  }
-  return db;
+  return pool;
 }
 
 /**
- * Run a query with parameters
- * @param {string} sql SQL query
+ * Run a query with parameters (INSERT, UPDATE, DELETE)
+ * @param {string} sql SQL query with $1, $2, ... placeholders
  * @param {Array} params Query parameters
  * @returns {Promise} Promise with query results
  */
-function run(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    const database = getDatabase();
-    database.run(sql, params, function(err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ id: this.lastID, changes: this.changes });
-      }
-    });
-  });
+async function run(sql, params = []) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(sql, params);
+    return {
+      id: result.rows[0]?.id || null,
+      changes: result.rowCount
+    };
+  } finally {
+    client.release();
+  }
 }
 
 /**
  * Get single row
- * @param {string} sql SQL query
+ * @param {string} sql SQL query with $1, $2, ... placeholders
  * @param {Array} params Query parameters
  * @returns {Promise} Promise with single row
  */
-function get(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    const database = getDatabase();
-    database.get(sql, params, (err, row) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+async function get(sql, params = []) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(sql, params);
+    return result.rows[0] || null;
+  } finally {
+    client.release();
+  }
 }
 
 /**
  * Get all rows
- * @param {string} sql SQL query
+ * @param {string} sql SQL query with $1, $2, ... placeholders
  * @param {Array} params Query parameters
  * @returns {Promise} Promise with all rows
  */
-function all(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    const database = getDatabase();
-    database.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+async function all(sql, params = []) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(sql, params);
+    return result.rows;
+  } finally {
+    client.release();
+  }
 }
 
 /**
- * Close database connection
+ * Execute a query directly (for queries that don't return data)
+ * @param {string} sql SQL query
+ * @param {Array} params Query parameters
+ * @returns {Promise} Promise with query result
  */
-function close() {
-  if (db) {
-    db.close((err) => {
-      if (err) {
-        console.error('Error closing database:', err.message);
-      } else {
-        console.log('Database connection closed.');
-        db = null;
-      }
-    });
+async function query(sql, params = []) {
+  const client = await pool.connect();
+  try {
+    return await client.query(sql, params);
+  } finally {
+    client.release();
   }
+}
+
+/**
+ * Close database connection pool
+ */
+async function close() {
+  await pool.end();
+  console.log('Database connection pool closed.');
 }
 
 module.exports = {
@@ -101,5 +110,6 @@ module.exports = {
   run,
   get,
   all,
+  query,
   close
 };
