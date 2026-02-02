@@ -69,6 +69,27 @@ cp .env.example .env
 npm run init-db
 ```
 
+**Alternatif:** Anda juga bisa menggunakan file schema.sql atau migrations:
+```bash
+# Menggunakan schema.sql langsung
+psql -U postgres -d hermes_db -f schema.sql
+
+# Atau menggunakan migrations secara berurutan
+psql -U postgres -d hermes_db -f migrations/001_initial_schema.sql
+psql -U postgres -d hermes_db -f migrations/002_sample_data.sql
+```
+
+Lihat dokumentasi lengkap di [migrations/README.md](migrations/README.md)
+
+## Database Schema & Migrations
+
+Project ini menyediakan dua cara untuk setup database:
+
+1. **schema.sql** - File schema lengkap yang berisi semua definisi table, index, trigger, dan function
+2. **migrations/** - Folder berisi migration files yang terorganisir dan terversionisasi
+
+Untuk informasi detail tentang migrations, lihat [migrations/README.md](migrations/README.md)
+
 ## Menjalankan Aplikasi
 
 ### Development mode (dengan auto-reload):
@@ -222,8 +243,11 @@ hermes/
 │   ├── database/
 │   │   └── init.js           # Database initialization
 │   └── index.js              # Main application entry
-├── database/
-│   └── personnel.db          # SQLite database file
+├── migrations/
+│   ├── 001_initial_schema.sql   # Initial schema migration
+│   ├── 002_sample_data.sql      # Sample data migration
+│   └── README.md                # Migration documentation
+├── schema.sql                # Complete database schema
 ├── .env.example              # Environment variables template
 ├── package.json
 └── README.md
