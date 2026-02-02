@@ -36,7 +36,14 @@ curl -X POST http://localhost:3000/api/personnel \
     "alamat": "Jakarta Selatan",
     "tanggal_lahir": "1995-05-10",
     "tanggal_masuk": "2020-01-20",
-    "status": "aktif"
+    "status": "aktif",
+    "additional_data": {
+      "badge_number": "B005",
+      "department_code": "MKT01",
+      "access_level": 2,
+      "skills": ["Digital Marketing", "Content Writing"],
+      "certifications": ["Google Ads", "Facebook Blueprint"]
+    }
   }'
 ```
 
@@ -54,7 +61,14 @@ curl -X PUT http://localhost:3000/api/personnel/4 \
     "alamat": "Jakarta Selatan",
     "tanggal_lahir": "1995-05-10",
     "tanggal_masuk": "2020-01-20",
-    "status": "aktif"
+    "status": "aktif",
+    "additional_data": {
+      "badge_number": "B005",
+      "department_code": "MKT01",
+      "access_level": 3,
+      "skills": ["Digital Marketing", "Content Writing", "SEO"],
+      "certifications": ["Google Ads", "Facebook Blueprint", "HubSpot"]
+    }
   }'
 ```
 
@@ -82,8 +96,13 @@ curl -X DELETE http://localhost:3000/api/personnel/4
       "tanggal_lahir": null,
       "tanggal_masuk": null,
       "status": "aktif",
-      "created_at": "2026-02-02 10:16:14",
-      "updated_at": "2026-02-02 10:16:14"
+      "additional_data": {
+        "badge_number": "B001",
+        "department_code": "IT01",
+        "access_level": 3
+      },
+      "created_at": "2026-02-02T10:38:17.539Z",
+      "updated_at": "2026-02-02T10:38:17.539Z"
     }
   ],
   "count": 1
@@ -106,8 +125,13 @@ curl -X DELETE http://localhost:3000/api/personnel/4
     "tanggal_lahir": null,
     "tanggal_masuk": null,
     "status": "aktif",
-    "created_at": "2026-02-02 10:16:14",
-    "updated_at": "2026-02-02 10:16:14"
+    "additional_data": {
+      "badge_number": "B001",
+      "department_code": "IT01",
+      "access_level": 3
+    },
+    "created_at": "2026-02-02T10:38:17.539Z",
+    "updated_at": "2026-02-02T10:38:17.539Z"
   }
 }
 ```
