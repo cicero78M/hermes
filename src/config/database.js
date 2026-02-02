@@ -4,18 +4,23 @@ require('dotenv').config();
 
 const dbPath = process.env.DB_PATH || path.join(__dirname, '../../database/personnel.db');
 
+let db = null;
+
 /**
- * Get database connection
+ * Get database connection (singleton pattern)
  * @returns {sqlite3.Database} Database instance
  */
 function getDatabase() {
-  return new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-      console.error('Error connecting to database:', err.message);
-      throw err;
-    }
-    console.log('Connected to the personnel database.');
-  });
+  if (!db) {
+    db = new sqlite3.Database(dbPath, (err) => {
+      if (err) {
+        console.error('Error connecting to database:', err.message);
+        throw err;
+      }
+      console.log('Connected to the personnel database.');
+    });
+  }
+  return db;
 }
 
 /**
@@ -26,14 +31,13 @@ function getDatabase() {
  */
 function run(sql, params = []) {
   return new Promise((resolve, reject) => {
-    const db = getDatabase();
-    db.run(sql, params, function(err) {
+    const database = getDatabase();
+    database.run(sql, params, function(err) {
       if (err) {
         reject(err);
       } else {
         resolve({ id: this.lastID, changes: this.changes });
       }
-      db.close();
     });
   });
 }
@@ -46,14 +50,13 @@ function run(sql, params = []) {
  */
 function get(sql, params = []) {
   return new Promise((resolve, reject) => {
-    const db = getDatabase();
-    db.get(sql, params, (err, row) => {
+    const database = getDatabase();
+    database.get(sql, params, (err, row) => {
       if (err) {
         reject(err);
       } else {
         resolve(row);
       }
-      db.close();
     });
   });
 }
@@ -66,21 +69,37 @@ function get(sql, params = []) {
  */
 function all(sql, params = []) {
   return new Promise((resolve, reject) => {
-    const db = getDatabase();
-    db.all(sql, params, (err, rows) => {
+    const database = getDatabase();
+    database.all(sql, params, (err, rows) => {
       if (err) {
         reject(err);
       } else {
         resolve(rows);
       }
-      db.close();
     });
   });
+}
+
+/**
+ * Close database connection
+ */
+function close() {
+  if (db) {
+    db.close((err) => {
+      if (err) {
+        console.error('Error closing database:', err.message);
+      } else {
+        console.log('Database connection closed.');
+        db = null;
+      }
+    });
+  }
 }
 
 module.exports = {
   getDatabase,
   run,
   get,
-  all
+  all,
+  close
 };
