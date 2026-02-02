@@ -139,6 +139,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # Database files
-database/
+database/*.db
+database/*.db-journal
 *.db
 *.db-journal
