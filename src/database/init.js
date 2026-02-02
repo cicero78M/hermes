@@ -111,6 +111,7 @@ async function initializeDatabase() {
     throw err;
   } finally {
     client.release();
+    // Close pool only for initialization script
     await pool.end();
   }
 }

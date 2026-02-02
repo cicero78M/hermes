@@ -170,10 +170,10 @@ class Personnel {
   static async updateAdditionalDataKey(id, key, value) {
     const sql = `
       UPDATE personnel
-      SET additional_data = jsonb_set(additional_data, $1, $2)
+      SET additional_data = jsonb_set(additional_data, $1::text[], $2::jsonb)
       WHERE id = $3
     `;
-    await db.query(sql, [`{${key}}`, JSON.stringify(value), id]);
+    await db.query(sql, [[key], JSON.stringify(value), id]);
     return { changes: 1 };
   }
 }

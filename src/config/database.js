@@ -33,6 +33,7 @@ function getDatabase() {
 
 /**
  * Run a query with parameters (INSERT, UPDATE, DELETE)
+ * Note: This function returns the id field only if the query includes a RETURNING clause
  * @param {string} sql SQL query with $1, $2, ... placeholders
  * @param {Array} params Query parameters
  * @returns {Promise} Promise with query results
