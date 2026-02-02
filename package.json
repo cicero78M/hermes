@@ -1,0 +1,31 @@
+{
+  "name": "hermes",
+  "version": "1.0.0",
+  "description": "Backend database for personnel data",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "init-db": "node src/database/init.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "backend",
+    "database",
+    "personnel",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  }
+}
