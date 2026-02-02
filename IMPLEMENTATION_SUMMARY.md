@@ -2,15 +2,18 @@
 
 ## Ringkasan Implementasi
 
-Backend database untuk data personil telah berhasil diimplementasikan dengan lengkap dan siap digunakan.
+Backend database untuk data personil telah berhasil dimigrasikan ke PostgreSQL dengan dukungan key-value metadata menggunakan JSONB.
 
 ## Fitur yang Telah Diimplementasikan
 
-### ✅ Database
-- SQLite database dengan schema lengkap untuk data personil
-- Tabel `personnel` dengan 13 fields termasuk timestamps
-- Index untuk optimasi pencarian (nip, nama, status)
-- Sample data untuk testing (3 personil)
+### ✅ Database (PostgreSQL)
+- PostgreSQL database dengan schema lengkap untuk data personil
+- Tabel `personnel` dengan 14 fields termasuk JSONB untuk metadata
+- **Key-Value Support**: Field `additional_data` (JSONB) untuk menyimpan metadata fleksibel
+- Index untuk optimasi pencarian (nip, nama, status, additional_data)
+- GIN index untuk pencarian pada JSONB field
+- Trigger untuk auto-update `updated_at` timestamp
+- Sample data dengan key-value metadata (badge_number, access_level, department_code)
 
 ### ✅ API Endpoints
 1. **GET /api/personnel** - Mendapatkan semua data personil
@@ -116,16 +119,40 @@ Semua endpoint telah ditest dan berfungsi dengan baik:
 
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
-- **SQLite3** - Database
+- **PostgreSQL** - Database dengan JSONB support untuk key-value metadata
+- **pg** - PostgreSQL client untuk Node.js
 - **dotenv** - Environment configuration
 - **CORS** - Cross-origin resource sharing
 
+## Key Features
+
+### 1. PostgreSQL Integration
+- Connection pooling untuk performa optimal
+- Parameterized queries untuk keamanan (SQL injection protection)
+- Async/await untuk operasi database yang efisien
+
+### 2. Key-Value Metadata (additional_data)
+- JSONB field untuk menyimpan metadata fleksibel
+- GIN index untuk pencarian cepat pada JSONB
+- Methods untuk query dan update key-value pairs:
+  - `searchByAdditionalData(key, value)` - Cari personnel berdasarkan key-value
+  - `updateAdditionalDataKey(id, key, value)` - Update key tertentu tanpa mengubah data lain
+
+### 3. Auto-Update Timestamps
+- Trigger PostgreSQL yang otomatis update `updated_at` saat data diubah
+- Tidak perlu manual update timestamp di aplikasi
+
 ## Sample Data
 
-Database sudah terisi dengan 3 data personil sample:
+Database sudah terisi dengan 3 data personil sample dengan key-value metadata:
 1. Budi Santoso - Kepala Bagian (IT Department)
+   - Badge: B001, Department Code: IT01, Access Level: 3
 2. Siti Nurhaliza - Staff (HR Department)
+   - Badge: B002, Department Code: HR01, Access Level: 2
 3. Ahmad Dhani - Manager (Finance Department)
+   - Badge: B003, Department Code: FIN01, Access Level: 4
+
+Setiap personnel memiliki `additional_data` JSONB yang dapat menyimpan metadata custom seperti badge_number, department_code, access_level, skills, certifications, dan lainnya.
 
 ## Next Steps (Optional Enhancements)
 
@@ -142,6 +169,14 @@ Untuk pengembangan lebih lanjut, bisa ditambahkan:
 
 ## Status
 
-✅ **IMPLEMENTASI SELESAI DAN SIAP DIGUNAKAN**
+✅ **MIGRASI KE POSTGRESQL SELESAI**
 
-Semua fitur telah diimplementasikan, ditest, dan verified. Backend database untuk data personil sudah fully functional dan ready untuk production use.
+Semua fitur telah berhasil dimigrasikan dari SQLite ke PostgreSQL dengan penambahan fitur key-value metadata menggunakan JSONB. Backend database untuk data personil sudah fully functional dengan PostgreSQL dan ready untuk production use.
+
+### What's New in PostgreSQL Version:
+- ✅ PostgreSQL database dengan connection pooling
+- ✅ JSONB field untuk key-value metadata (additional_data)
+- ✅ GIN index untuk pencarian JSONB
+- ✅ Auto-update timestamp dengan trigger
+- ✅ Enhanced query capabilities dengan PostgreSQL features
+- ✅ Better scalability dan performance

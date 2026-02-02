@@ -1,15 +1,16 @@
 # Hermes - Personnel Database Backend
 
-Backend API untuk mengelola data personil dengan database SQLite.
+Backend API untuk mengelola data personil dengan database PostgreSQL.
 
 ## Fitur
 
 - ✅ CRUD operations lengkap untuk data personil
-- ✅ Database SQLite yang ringan dan portable
+- ✅ Database PostgreSQL dengan support untuk key-value metadata
 - ✅ RESTful API dengan Express.js
 - ✅ Pencarian dan filter data personil
 - ✅ Validasi data
 - ✅ Sample data untuk testing
+- ✅ JSONB field untuk menyimpan metadata fleksibel (key-value pairs)
 
 ## Struktur Database
 
@@ -26,10 +27,17 @@ Tabel `personnel` memiliki field-field berikut:
 - `tanggal_lahir` - Tanggal lahir
 - `tanggal_masuk` - Tanggal masuk kerja
 - `status` - Status (aktif/non-aktif)
+- `additional_data` - JSONB field untuk metadata key-value (badge_number, access_level, skills, dll)
 - `created_at` - Timestamp created
-- `updated_at` - Timestamp updated
+- `updated_at` - Timestamp updated (auto-update dengan trigger)
 
 ## Instalasi
+
+### Prerequisites
+- Node.js (v14 atau lebih tinggi)
+- PostgreSQL (v12 atau lebih tinggi)
+
+### Langkah-langkah
 
 1. Clone repository:
 ```bash
@@ -42,12 +50,21 @@ cd hermes
 npm install
 ```
 
-3. Setup environment variables:
+3. Setup PostgreSQL:
 ```bash
-cp .env.example .env
+# Buat database baru
+sudo -u postgres psql
+CREATE DATABASE hermes_db;
+\q
 ```
 
-4. Initialize database:
+4. Setup environment variables:
+```bash
+cp .env.example .env
+# Edit .env sesuai konfigurasi PostgreSQL Anda
+```
+
+5. Initialize database:
 ```bash
 npm run init-db
 ```
@@ -99,9 +116,18 @@ Content-Type: application/json
   "alamat": "Jakarta",
   "tanggal_lahir": "1980-01-01",
   "tanggal_masuk": "2010-01-01",
-  "status": "aktif"
+  "status": "aktif",
+  "additional_data": {
+    "badge_number": "B005",
+    "department_code": "IT03",
+    "access_level": 2,
+    "skills": ["Python", "JavaScript"],
+    "certifications": ["AWS Certified"]
+  }
 }
 ```
+
+**Note**: Field `additional_data` adalah JSONB yang dapat menyimpan key-value pairs apa saja sesuai kebutuhan.
 
 ### 5. Update Personnel
 ```
@@ -120,6 +146,38 @@ Content-Type: application/json
 ```
 DELETE /api/personnel/:id
 ```
+
+## Key-Value Metadata (additional_data)
+
+Field `additional_data` menggunakan tipe JSONB PostgreSQL yang memungkinkan penyimpanan metadata fleksibel dalam format key-value. Anda dapat menyimpan informasi tambahan apa saja yang diperlukan untuk setiap personnel.
+
+### Contoh Penggunaan:
+
+**Menyimpan data custom:**
+```json
+{
+  "additional_data": {
+    "badge_number": "B001",
+    "department_code": "IT01",
+    "access_level": 3,
+    "skills": ["JavaScript", "Python", "PostgreSQL"],
+    "certifications": ["AWS", "Azure"],
+    "emergency_contact": {
+      "name": "Jane Doe",
+      "phone": "081234567890"
+    }
+  }
+}
+```
+
+**Keuntungan JSONB:**
+- Tidak perlu mengubah schema database untuk menambah field baru
+- Mendukung indexing untuk pencarian cepat
+- Dapat menyimpan nested objects dan arrays
+- Fleksibel untuk berbagai use case
+
+**Query berdasarkan key-value:**
+Model sudah dilengkapi dengan method `searchByAdditionalData()` dan `updateAdditionalDataKey()` untuk manipulasi data key-value.
 
 ## Response Format
 
@@ -174,9 +232,17 @@ hermes/
 ## Environment Variables
 
 ```
+# Server Configuration
 PORT=3000
 NODE_ENV=development
-DB_PATH=./database/personnel.db
+
+# Database Configuration (PostgreSQL)
+DB_TYPE=postgresql
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=hermes_db
+DB_USER=postgres
+DB_PASSWORD=postgres
 ```
 
 ## License
