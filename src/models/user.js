@@ -34,6 +34,16 @@ class User {
   }
 
   /**
+   * Get user by Telegram ID
+   * @param {string} telegramId Telegram user ID
+   * @returns {Promise<Object>} User data
+   */
+  static async getByTelegramId(telegramId) {
+    const sql = 'SELECT * FROM users WHERE telegram_id = $1';
+    return await db.get(sql, [telegramId]);
+  }
+
+  /**
    * Search users by name
    * @param {string} name User name
    * @returns {Promise<Array>} List of users matching the name
@@ -62,9 +72,9 @@ class User {
     const sql = `
       INSERT INTO users (
         uuid, nama, jabatan, unit_kerja, email, telepon, 
-        status, pangkat, rayon, ig_uname, fb_uname, tt_uname, x_uname, yt_uname
+        status, pangkat, rayon, ig_uname, fb_uname, tt_uname, x_uname, yt_uname, telegram_id
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING id
     `;
     
@@ -82,7 +92,8 @@ class User {
       data.fb_uname || null,
       data.tt_uname || null,
       data.x_uname || null,
-      data.yt_uname || null
+      data.yt_uname || null,
+      data.telegram_id || null
     ];
     
     const result = await db.get(sql, params);
@@ -111,8 +122,9 @@ class User {
           fb_uname = $11,
           tt_uname = $12,
           x_uname = $13,
-          yt_uname = $14
-      WHERE id = $15
+          yt_uname = $14,
+          telegram_id = $15
+      WHERE id = $16
     `;
     
     const params = [
@@ -130,6 +142,7 @@ class User {
       data.tt_uname || null,
       data.x_uname || null,
       data.yt_uname || null,
+      data.telegram_id || null,
       id
     ];
     
@@ -145,6 +158,70 @@ class User {
   static async delete(id) {
     const sql = 'DELETE FROM users WHERE id = $1';
     await db.query(sql, [id]);
+    return { changes: 1 };
+  }
+
+  /**
+   * Update user data by UUID (for Telegram bot)
+   * @param {string} uuid User UUID
+   * @param {Object} data User data to update (partial update)
+   * @returns {Promise<Object>} Update result
+   */
+  static async updateByUuid(uuid, data) {
+    // Build dynamic update query based on provided fields
+    const updates = [];
+    const params = [];
+    let paramIndex = 1;
+
+    if (data.telegram_id !== undefined) {
+      updates.push(`telegram_id = $${paramIndex++}`);
+      params.push(data.telegram_id);
+    }
+    if (data.nama !== undefined) {
+      updates.push(`nama = $${paramIndex++}`);
+      params.push(data.nama);
+    }
+    if (data.pangkat !== undefined) {
+      updates.push(`pangkat = $${paramIndex++}`);
+      params.push(data.pangkat);
+    }
+    if (data.telepon !== undefined) {
+      updates.push(`telepon = $${paramIndex++}`);
+      params.push(data.telepon);
+    }
+    if (data.ig_uname !== undefined) {
+      updates.push(`ig_uname = $${paramIndex++}`);
+      params.push(data.ig_uname);
+    }
+    if (data.fb_uname !== undefined) {
+      updates.push(`fb_uname = $${paramIndex++}`);
+      params.push(data.fb_uname);
+    }
+    if (data.tt_uname !== undefined) {
+      updates.push(`tt_uname = $${paramIndex++}`);
+      params.push(data.tt_uname);
+    }
+    if (data.x_uname !== undefined) {
+      updates.push(`x_uname = $${paramIndex++}`);
+      params.push(data.x_uname);
+    }
+    if (data.yt_uname !== undefined) {
+      updates.push(`yt_uname = $${paramIndex++}`);
+      params.push(data.yt_uname);
+    }
+
+    if (updates.length === 0) {
+      return { changes: 0 };
+    }
+
+    params.push(uuid);
+    const sql = `
+      UPDATE users
+      SET ${updates.join(', ')}
+      WHERE uuid = $${paramIndex}
+    `;
+
+    await db.query(sql, params);
     return { changes: 1 };
   }
 }
