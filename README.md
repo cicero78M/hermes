@@ -5,12 +5,12 @@ Backend API untuk mengelola data user dengan database PostgreSQL.
 ## Fitur
 
 - ✅ CRUD operations lengkap untuk data user
-- ✅ Database PostgreSQL dengan support untuk key-value metadata
+- ✅ Database PostgreSQL
 - ✅ RESTful API dengan Express.js
 - ✅ Pencarian dan filter data user
 - ✅ Validasi data
 - ✅ Sample data untuk testing
-- ✅ JSONB field untuk menyimpan metadata fleksibel (key-value pairs)
+- ✅ Support untuk social media usernames
 
 ## Struktur Database
 
@@ -23,11 +23,14 @@ Tabel `users` memiliki field-field berikut:
 - `unit_kerja` - Unit kerja/departemen
 - `email` - Email address
 - `telepon` - Nomor telepon
-- `alamat` - Alamat lengkap
-- `tanggal_lahir` - Tanggal lahir
-- `tanggal_masuk` - Tanggal masuk kerja
 - `status` - Status (aktif/non-aktif)
-- `additional_data` - JSONB field untuk metadata key-value (badge_number, access_level, skills, dll)
+- `pangkat` - Pangkat/grade
+- `rayon` - Rayon/region
+- `ig_uname` - Instagram username
+- `fb_uname` - Facebook username
+- `tt_uname` - TikTok username
+- `x_uname` - X (Twitter) username
+- `yt_uname` - YouTube username
 - `created_at` - Timestamp created
 - `updated_at` - Timestamp updated (auto-update dengan trigger)
 
@@ -134,21 +137,16 @@ Content-Type: application/json
   "unit_kerja": "IT Department",
   "email": "john.doe@hermes.id",
   "telepon": "081234567893",
-  "alamat": "Jakarta",
-  "tanggal_lahir": "1980-01-01",
-  "tanggal_masuk": "2010-01-01",
   "status": "aktif",
-  "additional_data": {
-    "badge_number": "B005",
-    "department_code": "IT03",
-    "access_level": 2,
-    "skills": ["Python", "JavaScript"],
-    "certifications": ["AWS Certified"]
-  }
+  "pangkat": "Pengurus",
+  "rayon": "Rayon 1",
+  "ig_uname": "johndoe",
+  "fb_uname": "john.doe",
+  "tt_uname": "johndoe_official",
+  "x_uname": "johndoe",
+  "yt_uname": "johndoe"
 }
 ```
-
-**Note**: Field `additional_data` adalah JSONB yang dapat menyimpan key-value pairs apa saja sesuai kebutuhan.
 
 ### 5. Update User
 ```
@@ -167,38 +165,6 @@ Content-Type: application/json
 ```
 DELETE /api/users/:id
 ```
-
-## Key-Value Metadata (additional_data)
-
-Field `additional_data` menggunakan tipe JSONB PostgreSQL yang memungkinkan penyimpanan metadata fleksibel dalam format key-value. Anda dapat menyimpan informasi tambahan apa saja yang diperlukan untuk setiap user.
-
-### Contoh Penggunaan:
-
-**Menyimpan data custom:**
-```json
-{
-  "additional_data": {
-    "badge_number": "B001",
-    "department_code": "IT01",
-    "access_level": 3,
-    "skills": ["JavaScript", "Python", "PostgreSQL"],
-    "certifications": ["AWS", "Azure"],
-    "emergency_contact": {
-      "name": "Jane Doe",
-      "phone": "081234567890"
-    }
-  }
-}
-```
-
-**Keuntungan JSONB:**
-- Tidak perlu mengubah schema database untuk menambah field baru
-- Mendukung indexing untuk pencarian cepat
-- Dapat menyimpan nested objects dan arrays
-- Fleksibel untuk berbagai use case
-
-**Query berdasarkan key-value:**
-Model sudah dilengkapi dengan method `searchByAdditionalData()` dan `updateAdditionalDataKey()` untuk manipulasi data key-value.
 
 ## Response Format
 
