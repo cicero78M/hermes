@@ -7,11 +7,11 @@
 -- UP Migration
 -- ============================================================================
 
--- Insert sample personnel data
-INSERT INTO personnel (nip, nama, jabatan, unit_kerja, email, telepon, status, additional_data)
+-- Insert sample user data
+INSERT INTO users (uuid, nama, jabatan, unit_kerja, email, telepon, status, additional_data)
 VALUES 
   (
-    '198001012010011001', 
+    '550e8400-e29b-41d4-a716-446655440001', 
     'Budi Santoso', 
     'Kepala Bagian', 
     'IT Department', 
@@ -21,7 +21,7 @@ VALUES
     '{"badge_number": "B001", "department_code": "IT01", "access_level": 3}'::jsonb
   ),
   (
-    '198502152012022002', 
+    '550e8400-e29b-41d4-a716-446655440002', 
     'Siti Nurhaliza', 
     'Staff', 
     'HR Department', 
@@ -31,7 +31,7 @@ VALUES
     '{"badge_number": "B002", "department_code": "HR01", "access_level": 2}'::jsonb
   ),
   (
-    '199003202015031003', 
+    '550e8400-e29b-41d4-a716-446655440003', 
     'Ahmad Dhani', 
     'Manager', 
     'Finance Department', 
@@ -40,11 +40,11 @@ VALUES
     'aktif',
     '{"badge_number": "B003", "department_code": "FIN01", "access_level": 4}'::jsonb
   )
-ON CONFLICT (nip) DO NOTHING;
+ON CONFLICT (uuid) DO NOTHING;
 
 -- ============================================================================
 -- DOWN Migration (Rollback)
 -- ============================================================================
 
 -- To rollback this migration, run the following SQL:
--- DELETE FROM personnel WHERE nip IN ('198001012010011001', '198502152012022002', '199003202015031003');
+-- DELETE FROM users WHERE uuid IN ('550e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440003');

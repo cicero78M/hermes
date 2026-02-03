@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const personnelRoutes = require('./routes/personnel');
+const userRoutes = require('./routes/user');
 const db = require('./config/database');
 
 const app = express();
@@ -16,15 +16,15 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.get('/', (req, res) => {
   res.json({
-    message: 'Hermes Personnel Database API',
-    version: '1.0.0',
+    message: 'Hermes User Database API',
+    version: '2.0.0',
     endpoints: {
-      personnel: '/api/personnel'
+      users: '/api/users'
     }
   });
 });
 
-app.use('/api/personnel', personnelRoutes);
+app.use('/api/users', userRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

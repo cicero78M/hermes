@@ -16,11 +16,11 @@ async function initializeDatabase() {
   try {
     console.log('Connected to PostgreSQL database.');
     
-    // Create personnel table with JSONB for key-value metadata
-    const createPersonnelTable = `
-      CREATE TABLE IF NOT EXISTS personnel (
+    // Create users table with JSONB for key-value metadata
+    const createUsersTable = `
+      CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
-        nip VARCHAR(50) UNIQUE NOT NULL,
+        uuid VARCHAR(50) UNIQUE NOT NULL,
         nama VARCHAR(255) NOT NULL,
         jabatan VARCHAR(255),
         unit_kerja VARCHAR(255),
@@ -36,15 +36,15 @@ async function initializeDatabase() {
       );
     `;
     
-    await client.query(createPersonnelTable);
-    console.log('Personnel table created successfully.');
+    await client.query(createUsersTable);
+    console.log('Users table created successfully.');
     
     // Create indexes for faster searches
     const createIndexes = `
-      CREATE INDEX IF NOT EXISTS idx_personnel_nip ON personnel(nip);
-      CREATE INDEX IF NOT EXISTS idx_personnel_nama ON personnel(nama);
-      CREATE INDEX IF NOT EXISTS idx_personnel_status ON personnel(status);
-      CREATE INDEX IF NOT EXISTS idx_personnel_additional_data ON personnel USING GIN(additional_data);
+      CREATE INDEX IF NOT EXISTS idx_users_uuid ON users(uuid);
+      CREATE INDEX IF NOT EXISTS idx_users_nama ON users(nama);
+      CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+      CREATE INDEX IF NOT EXISTS idx_users_additional_data ON users USING GIN(additional_data);
     `;
     
     await client.query(createIndexes);
@@ -60,10 +60,10 @@ async function initializeDatabase() {
       END;
       $$ language 'plpgsql';
       
-      DROP TRIGGER IF EXISTS update_personnel_updated_at ON personnel;
+      DROP TRIGGER IF EXISTS update_users_updated_at ON users;
       
-      CREATE TRIGGER update_personnel_updated_at
-        BEFORE UPDATE ON personnel
+      CREATE TRIGGER update_users_updated_at
+        BEFORE UPDATE ON users
         FOR EACH ROW
         EXECUTE FUNCTION update_updated_at_column();
     `;
@@ -72,13 +72,13 @@ async function initializeDatabase() {
     console.log('Trigger created successfully.');
     
     // Check if sample data exists
-    const checkData = await client.query('SELECT COUNT(*) FROM personnel');
+    const checkData = await client.query('SELECT COUNT(*) FROM users');
     const count = parseInt(checkData.rows[0].count);
     
     if (count === 0) {
       // Insert sample data with key-value additional_data
       const insertSample = `
-        INSERT INTO personnel (nip, nama, jabatan, unit_kerja, email, telepon, status, additional_data)
+        INSERT INTO users (uuid, nama, jabatan, unit_kerja, email, telepon, status, additional_data)
         VALUES 
           ($1, $2, $3, $4, $5, $6, $7, $8),
           ($9, $10, $11, $12, $13, $14, $15, $16),
@@ -86,15 +86,15 @@ async function initializeDatabase() {
       `;
       
       await client.query(insertSample, [
-        '198001012010011001', 'Budi Santoso', 'Kepala Bagian', 'IT Department', 
+        '550e8400-e29b-41d4-a716-446655440001', 'Budi Santoso', 'Kepala Bagian', 'IT Department', 
         'budi.santoso@hermes.id', '081234567890', 'aktif', 
         JSON.stringify({ badge_number: 'B001', department_code: 'IT01', access_level: 3 }),
         
-        '198502152012022002', 'Siti Nurhaliza', 'Staff', 'HR Department', 
+        '550e8400-e29b-41d4-a716-446655440002', 'Siti Nurhaliza', 'Staff', 'HR Department', 
         'siti.nurhaliza@hermes.id', '081234567891', 'aktif',
         JSON.stringify({ badge_number: 'B002', department_code: 'HR01', access_level: 2 }),
         
-        '199003202015031003', 'Ahmad Dhani', 'Manager', 'Finance Department', 
+        '550e8400-e29b-41d4-a716-446655440003', 'Ahmad Dhani', 'Manager', 'Finance Department', 
         'ahmad.dhani@hermes.id', '081234567892', 'aktif',
         JSON.stringify({ badge_number: 'B003', department_code: 'FIN01', access_level: 4 })
       ]);

@@ -1,7 +1,7 @@
 {
   "name": "hermes",
-  "version": "1.0.0",
-  "description": "Backend database for personnel data",
+  "version": "2.0.0",
+  "description": "Backend database for user data",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -12,7 +12,7 @@
   "keywords": [
     "backend",
     "database",
-    "personnel",
+    "user",
     "api"
   ],
   "author": "",
