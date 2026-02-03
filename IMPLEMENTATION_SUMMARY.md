@@ -1,32 +1,32 @@
-# Implementation Summary - Personnel Database Backend
+# Implementation Summary - User Database Backend
 
 ## Ringkasan Implementasi
 
-Backend database untuk data personil telah berhasil dimigrasikan ke PostgreSQL dengan dukungan key-value metadata menggunakan JSONB.
+Backend database untuk data user telah berhasil dimigrasikan ke PostgreSQL dengan dukungan key-value metadata menggunakan JSONB.
 
 ## Fitur yang Telah Diimplementasikan
 
 ### ✅ Database (PostgreSQL)
-- PostgreSQL database dengan schema lengkap untuk data personil
-- Tabel `personnel` dengan 14 fields termasuk JSONB untuk metadata
+- PostgreSQL database dengan schema lengkap untuk data user
+- Tabel `users` dengan 14 fields termasuk JSONB untuk metadata
 - **Key-Value Support**: Field `additional_data` (JSONB) untuk menyimpan metadata fleksibel
-- Index untuk optimasi pencarian (nip, nama, status, additional_data)
+- Index untuk optimasi pencarian (uuid, nama, status, additional_data)
 - GIN index untuk pencarian pada JSONB field
 - Trigger untuk auto-update `updated_at` timestamp
 - Sample data dengan key-value metadata (badge_number, access_level, department_code)
 
 ### ✅ API Endpoints
-1. **GET /api/personnel** - Mendapatkan semua data personil
-2. **GET /api/personnel/:id** - Mendapatkan personil berdasarkan ID
-3. **GET /api/personnel?query=nama** - Pencarian personil berdasarkan nama
-4. **GET /api/personnel?status=aktif** - Filter personil berdasarkan status
-5. **POST /api/personnel** - Menambah personil baru
-6. **PUT /api/personnel/:id** - Update data personil
-7. **DELETE /api/personnel/:id** - Hapus personil
+1. **GET /api/users** - Mendapatkan semua data user
+2. **GET /api/users/:id** - Mendapatkan user berdasarkan ID
+3. **GET /api/users?query=nama** - Pencarian user berdasarkan nama
+4. **GET /api/users?status=aktif** - Filter user berdasarkan status
+5. **POST /api/users** - Menambah user baru
+6. **PUT /api/users/:id** - Update data user
+7. **DELETE /api/users/:id** - Hapus user
 
 ### ✅ Validasi & Error Handling
-- Validasi field required (NIP dan nama)
-- Pengecekan duplikasi NIP
+- Validasi field required (UUID dan nama)
+- Pengecekan duplikasi UUID
 - Error handling yang lengkap dengan status codes yang sesuai
 - Response format yang konsisten (success/error)
 
@@ -78,11 +78,11 @@ hermes/
 │   ├── config/
 │   │   └── database.js          # Database connection & queries
 │   ├── controllers/
-│   │   └── personnelController.js  # Request handlers
+│   │   └── userController.js    # Request handlers
 │   ├── models/
-│   │   └── personnel.js         # Data access layer
+│   │   └── user.js              # Data access layer
 │   ├── routes/
-│   │   └── personnel.js         # API routes definition
+│   │   └── user.js              # API routes definition
 │   ├── database/
 │   │   └── init.js             # Database initialization
 │   └── index.js                # Main application
@@ -97,15 +97,15 @@ hermes/
 ## Testing
 
 Semua endpoint telah ditest dan berfungsi dengan baik:
-- ✅ GET all personnel - OK
+- ✅ GET all users - OK
 - ✅ GET by ID - OK
 - ✅ Search by name - OK
 - ✅ Filter by status - OK
-- ✅ CREATE new personnel - OK
-- ✅ UPDATE personnel - OK
-- ✅ DELETE personnel - OK
+- ✅ CREATE new user - OK
+- ✅ UPDATE user - OK
+- ✅ DELETE user - OK
 - ✅ Validation (required fields) - OK
-- ✅ Validation (duplicate NIP) - OK
+- ✅ Validation (duplicate UUID) - OK
 - ✅ Error handling - OK
 
 ## Security
@@ -135,7 +135,7 @@ Semua endpoint telah ditest dan berfungsi dengan baik:
 - JSONB field untuk menyimpan metadata fleksibel
 - GIN index untuk pencarian cepat pada JSONB
 - Methods untuk query dan update key-value pairs:
-  - `searchByAdditionalData(key, value)` - Cari personnel berdasarkan key-value
+  - `searchByAdditionalData(key, value)` - Cari user berdasarkan key-value
   - `updateAdditionalDataKey(id, key, value)` - Update key tertentu tanpa mengubah data lain
 
 ### 3. Auto-Update Timestamps
@@ -144,7 +144,7 @@ Semua endpoint telah ditest dan berfungsi dengan baik:
 
 ## Sample Data
 
-Database sudah terisi dengan 3 data personil sample dengan key-value metadata:
+Database sudah terisi dengan 3 data user sample dengan key-value metadata:
 1. Budi Santoso - Kepala Bagian (IT Department)
    - Badge: B001, Department Code: IT01, Access Level: 3
 2. Siti Nurhaliza - Staff (HR Department)
@@ -152,14 +152,14 @@ Database sudah terisi dengan 3 data personil sample dengan key-value metadata:
 3. Ahmad Dhani - Manager (Finance Department)
    - Badge: B003, Department Code: FIN01, Access Level: 4
 
-Setiap personnel memiliki `additional_data` JSONB yang dapat menyimpan metadata custom seperti badge_number, department_code, access_level, skills, certifications, dan lainnya.
+Setiap user memiliki `additional_data` JSONB yang dapat menyimpan metadata custom seperti badge_number, department_code, access_level, skills, certifications, dan lainnya.
 
 ## Next Steps (Optional Enhancements)
 
 Untuk pengembangan lebih lanjut, bisa ditambahkan:
 - Authentication & Authorization (JWT)
-- Pagination untuk list personnel
-- File upload untuk foto personil
+- Pagination untuk list users
+- File upload untuk foto user
 - Export data ke Excel/PDF
 - Unit tests dengan Jest
 - API documentation dengan Swagger
@@ -171,7 +171,7 @@ Untuk pengembangan lebih lanjut, bisa ditambahkan:
 
 ✅ **MIGRASI KE POSTGRESQL SELESAI**
 
-Semua fitur telah berhasil dimigrasikan dari SQLite ke PostgreSQL dengan penambahan fitur key-value metadata menggunakan JSONB. Backend database untuk data personil sudah fully functional dengan PostgreSQL dan ready untuk production use.
+Semua fitur telah berhasil dimigrasikan dari SQLite ke PostgreSQL dengan penambahan fitur key-value metadata menggunakan JSONB. Backend database untuk data user sudah fully functional dengan PostgreSQL dan ready untuk production use.
 
 ### What's New in PostgreSQL Version:
 - ✅ PostgreSQL database dengan connection pooling

@@ -1,23 +1,23 @@
-# Hermes - Personnel Database Backend
+# Hermes - User Database Backend
 
-Backend API untuk mengelola data personil dengan database PostgreSQL.
+Backend API untuk mengelola data user dengan database PostgreSQL.
 
 ## Fitur
 
-- ✅ CRUD operations lengkap untuk data personil
+- ✅ CRUD operations lengkap untuk data user
 - ✅ Database PostgreSQL dengan support untuk key-value metadata
 - ✅ RESTful API dengan Express.js
-- ✅ Pencarian dan filter data personil
+- ✅ Pencarian dan filter data user
 - ✅ Validasi data
 - ✅ Sample data untuk testing
 - ✅ JSONB field untuk menyimpan metadata fleksibel (key-value pairs)
 
 ## Struktur Database
 
-Tabel `personnel` memiliki field-field berikut:
+Tabel `users` memiliki field-field berikut:
 
 - `id` - Primary key (auto increment)
-- `nip` - Nomor Induk Pegawai (unique, required)
+- `uuid` - Unique user identifier (unique, required)
 - `nama` - Nama lengkap (required)
 - `jabatan` - Jabatan/posisi
 - `unit_kerja` - Unit kerja/departemen
@@ -106,29 +106,29 @@ Server akan berjalan di `http://localhost:3000`
 
 ## API Endpoints
 
-### 1. Get All Personnel
+### 1. Get All Users
 ```
-GET /api/personnel
-```
-
-### 2. Search Personnel
-```
-GET /api/personnel?query=nama
-GET /api/personnel?status=aktif
+GET /api/users
 ```
 
-### 3. Get Personnel by ID
+### 2. Search Users
 ```
-GET /api/personnel/:id
+GET /api/users?query=nama
+GET /api/users?status=aktif
 ```
 
-### 4. Create New Personnel
+### 3. Get User by ID
 ```
-POST /api/personnel
+GET /api/users/:id
+```
+
+### 4. Create New User
+```
+POST /api/users
 Content-Type: application/json
 
 {
-  "nip": "198001012010011004",
+  "uuid": "550e8400-e29b-41d4-a716-446655440004",
   "nama": "John Doe",
   "jabatan": "Staff",
   "unit_kerja": "IT Department",
@@ -150,27 +150,27 @@ Content-Type: application/json
 
 **Note**: Field `additional_data` adalah JSONB yang dapat menyimpan key-value pairs apa saja sesuai kebutuhan.
 
-### 5. Update Personnel
+### 5. Update User
 ```
-PUT /api/personnel/:id
+PUT /api/users/:id
 Content-Type: application/json
 
 {
-  "nip": "198001012010011004",
+  "uuid": "550e8400-e29b-41d4-a716-446655440004",
   "nama": "John Doe Updated",
   "jabatan": "Senior Staff",
   ...
 }
 ```
 
-### 6. Delete Personnel
+### 6. Delete User
 ```
-DELETE /api/personnel/:id
+DELETE /api/users/:id
 ```
 
 ## Key-Value Metadata (additional_data)
 
-Field `additional_data` menggunakan tipe JSONB PostgreSQL yang memungkinkan penyimpanan metadata fleksibel dalam format key-value. Anda dapat menyimpan informasi tambahan apa saja yang diperlukan untuk setiap personnel.
+Field `additional_data` menggunakan tipe JSONB PostgreSQL yang memungkinkan penyimpanan metadata fleksibel dalam format key-value. Anda dapat menyimpan informasi tambahan apa saja yang diperlukan untuk setiap user.
 
 ### Contoh Penggunaan:
 
@@ -235,11 +235,11 @@ hermes/
 │   ├── config/
 │   │   └── database.js       # Database configuration
 │   ├── controllers/
-│   │   └── personnelController.js
+│   │   └── userController.js
 │   ├── models/
-│   │   └── personnel.js      # Personnel model
+│   │   └── user.js           # User model
 │   ├── routes/
-│   │   └── personnel.js      # API routes
+│   │   └── user.js           # API routes
 │   ├── database/
 │   │   └── init.js           # Database initialization
 │   └── index.js              # Main application entry
