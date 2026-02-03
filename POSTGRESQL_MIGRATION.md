@@ -222,7 +222,7 @@ Jika perlu rollback ke SQLite:
 1. Install sqlite3: `npm install sqlite3`
 2. Restore `src/config/database.js` dari commit sebelumnya
 3. Restore `src/database/init.js` dari commit sebelumnya
-4. Restore `src/models/personnel.js` (parameter placeholders)
+4. Restore old personnel model and rename tables back
 5. Update `.env` dengan `DB_PATH`
 
 ## Support
