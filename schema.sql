@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
   tt_uname VARCHAR(255),
   x_uname VARCHAR(255),
   yt_uname VARCHAR(255),
+  telegram_id VARCHAR(50) UNIQUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -36,6 +37,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_users_uuid ON users(uuid);
 CREATE INDEX IF NOT EXISTS idx_users_nama ON users(nama);
 CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+CREATE INDEX IF NOT EXISTS idx_users_telegram_id ON users(telegram_id);
 
 -- ============================================================================
 -- FUNCTIONS
@@ -85,5 +87,6 @@ COMMENT ON COLUMN users.fb_uname IS 'Facebook username';
 COMMENT ON COLUMN users.tt_uname IS 'TikTok username';
 COMMENT ON COLUMN users.x_uname IS 'X (Twitter) username';
 COMMENT ON COLUMN users.yt_uname IS 'YouTube username';
+COMMENT ON COLUMN users.telegram_id IS 'Telegram user ID for bot integration';
 COMMENT ON COLUMN users.created_at IS 'Record creation timestamp';
 COMMENT ON COLUMN users.updated_at IS 'Record last update timestamp (auto-updated by trigger)';

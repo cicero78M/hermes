@@ -11,6 +11,7 @@ Backend API untuk mengelola data user dengan database PostgreSQL.
 - ✅ Validasi data
 - ✅ Sample data untuk testing
 - ✅ Support untuk social media usernames
+- ✅ **Telegram Bot Integration** - Update data user melalui Telegram
 
 ## Struktur Database
 
@@ -31,6 +32,7 @@ Tabel `users` memiliki field-field berikut:
 - `tt_uname` - TikTok username
 - `x_uname` - X (Twitter) username
 - `yt_uname` - YouTube username
+- `telegram_id` - Telegram user ID (for bot integration)
 - `created_at` - Timestamp created
 - `updated_at` - Timestamp updated (auto-update dengan trigger)
 
@@ -199,22 +201,26 @@ npm test
 hermes/
 ├── src/
 │   ├── config/
-│   │   └── database.js       # Database configuration
+│   │   └── database.js         # Database configuration
 │   ├── controllers/
-│   │   └── userController.js
+│   │   └── userController.js   # User controller
 │   ├── models/
-│   │   └── user.js           # User model
+│   │   └── user.js             # User model
 │   ├── routes/
-│   │   └── user.js           # API routes
+│   │   └── user.js             # API routes
+│   ├── services/
+│   │   └── telegramBot.js      # Telegram bot service
 │   ├── database/
-│   │   └── init.js           # Database initialization
-│   └── index.js              # Main application entry
+│   │   └── init.js             # Database initialization
+│   └── index.js                # Main application entry
 ├── migrations/
-│   ├── 001_initial_schema.sql   # Initial schema migration
-│   ├── 002_sample_data.sql      # Sample data migration
-│   └── README.md                # Migration documentation
-├── schema.sql                # Complete database schema
-├── .env.example              # Environment variables template
+│   ├── 001_initial_schema.sql     # Initial schema migration
+│   ├── 002_sample_data.sql        # Sample data migration
+│   ├── 004_add_telegram_id.sql    # Telegram ID field migration
+│   └── README.md                  # Migration documentation
+├── schema.sql                  # Complete database schema
+├── .env.example                # Environment variables template
+├── TELEGRAM_BOT.md             # Telegram bot documentation
 ├── package.json
 └── README.md
 ```
@@ -226,14 +232,46 @@ hermes/
 PORT=3000
 NODE_ENV=development
 
-# Database Configuration (PostgreSQL)
+# Database Configuration
 DB_TYPE=postgresql
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=hermes_db
 DB_USER=postgres
 DB_PASSWORD=postgres
+
+# Telegram Bot Configuration (Optional)
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
 ```
+
+**Note**: Untuk menggunakan Telegram Bot, dapatkan token dari @BotFather di Telegram. Lihat [TELEGRAM_BOT.md](TELEGRAM_BOT.md) untuk panduan lengkap.
+
+## Telegram Bot Integration
+
+Hermes menyediakan Telegram Bot untuk memudahkan user mengupdate data mereka melalui Telegram. Fitur ini optional dan dapat diaktifkan dengan mengkonfigurasi `TELEGRAM_BOT_TOKEN`.
+
+### Quick Start Telegram Bot
+
+1. Dapatkan token bot dari [@BotFather](https://t.me/BotFather) di Telegram
+2. Tambahkan token ke file `.env`:
+   ```
+   TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrsTUVwxyz
+   ```
+3. Jalankan migration untuk menambahkan field `telegram_id`:
+   ```bash
+   psql -U postgres -d hermes_db -f migrations/004_add_telegram_id.sql
+   ```
+4. Start aplikasi: `npm start`
+5. Buka bot di Telegram dan gunakan `/start`
+
+### Telegram Bot Features
+
+- 🔗 Link akun Telegram dengan UUID (NRP)
+- ✏️ Update nama, pangkat, telepon, social media usernames
+- 📊 View data user
+- 🤖 Command-based interface
+
+Untuk dokumentasi lengkap, lihat [TELEGRAM_BOT.md](TELEGRAM_BOT.md).
 
 ## License
 

@@ -4,9 +4,14 @@ require('dotenv').config();
 
 const userRoutes = require('./routes/user');
 const db = require('./config/database');
+const TelegramBotService = require('./services/telegramBot');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Initialize Telegram Bot
+const telegramBot = new TelegramBotService();
+telegramBot.initialize();
 
 // Middleware
 app.use(cors());
@@ -55,6 +60,7 @@ process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing HTTP server');
   server.close(() => {
     console.log('HTTP server closed');
+    telegramBot.stop();
     db.close();
     process.exit(0);
   });
@@ -64,6 +70,7 @@ process.on('SIGINT', () => {
   console.log('SIGINT signal received: closing HTTP server');
   server.close(() => {
     console.log('HTTP server closed');
+    telegramBot.stop();
     db.close();
     process.exit(0);
   });
