@@ -62,14 +62,11 @@ class User {
     const sql = `
       INSERT INTO users (
         uuid, nama, jabatan, unit_kerja, email, telepon, 
-        alamat, tanggal_lahir, tanggal_masuk, status, additional_data
+        status, pangkat, rayon, ig_uname, fb_uname, tt_uname, x_uname, yt_uname
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       RETURNING id
     `;
-    
-    // Prepare additional_data as JSONB
-    const additionalData = data.additional_data || {};
     
     const params = [
       data.uuid,
@@ -78,11 +75,14 @@ class User {
       data.unit_kerja || null,
       data.email || null,
       data.telepon || null,
-      data.alamat || null,
-      data.tanggal_lahir || null,
-      data.tanggal_masuk || null,
       data.status || 'aktif',
-      JSON.stringify(additionalData)
+      data.pangkat || null,
+      data.rayon || null,
+      data.ig_uname || null,
+      data.fb_uname || null,
+      data.tt_uname || null,
+      data.x_uname || null,
+      data.yt_uname || null
     ];
     
     const result = await db.get(sql, params);
@@ -104,16 +104,16 @@ class User {
           unit_kerja = $4,
           email = $5,
           telepon = $6,
-          alamat = $7,
-          tanggal_lahir = $8,
-          tanggal_masuk = $9,
-          status = $10,
-          additional_data = $11
-      WHERE id = $12
+          status = $7,
+          pangkat = $8,
+          rayon = $9,
+          ig_uname = $10,
+          fb_uname = $11,
+          tt_uname = $12,
+          x_uname = $13,
+          yt_uname = $14
+      WHERE id = $15
     `;
-    
-    // Prepare additional_data as JSONB
-    const additionalData = data.additional_data || {};
     
     const params = [
       data.uuid,
@@ -122,11 +122,14 @@ class User {
       data.unit_kerja || null,
       data.email || null,
       data.telepon || null,
-      data.alamat || null,
-      data.tanggal_lahir || null,
-      data.tanggal_masuk || null,
       data.status || 'aktif',
-      JSON.stringify(additionalData),
+      data.pangkat || null,
+      data.rayon || null,
+      data.ig_uname || null,
+      data.fb_uname || null,
+      data.tt_uname || null,
+      data.x_uname || null,
+      data.yt_uname || null,
       id
     ];
     
@@ -142,38 +145,6 @@ class User {
   static async delete(id) {
     const sql = 'DELETE FROM users WHERE id = $1';
     await db.query(sql, [id]);
-    return { changes: 1 };
-  }
-
-  /**
-   * Search users by key-value in additional_data
-   * @param {string} key Key in additional_data JSONB field
-   * @param {any} value Value to search for
-   * @returns {Promise<Array>} List of users matching the criteria
-   */
-  static async searchByAdditionalData(key, value) {
-    const sql = `
-      SELECT * FROM users 
-      WHERE additional_data->$1 = $2
-      ORDER BY nama ASC
-    `;
-    return await db.all(sql, [key, JSON.stringify(value)]);
-  }
-
-  /**
-   * Update specific key-value in additional_data
-   * @param {number} id User ID
-   * @param {string} key Key to update
-   * @param {any} value New value
-   * @returns {Promise<Object>} Update result
-   */
-  static async updateAdditionalDataKey(id, key, value) {
-    const sql = `
-      UPDATE users
-      SET additional_data = jsonb_set(additional_data, $1::text[], $2::jsonb)
-      WHERE id = $3
-    `;
-    await db.query(sql, [[key], JSON.stringify(value), id]);
     return { changes: 1 };
   }
 }

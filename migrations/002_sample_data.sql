@@ -8,7 +8,7 @@
 -- ============================================================================
 
 -- Insert sample user data
-INSERT INTO users (uuid, nama, jabatan, unit_kerja, email, telepon, status, additional_data)
+INSERT INTO users (uuid, nama, jabatan, unit_kerja, email, telepon, status, pangkat, rayon, ig_uname, fb_uname, tt_uname, x_uname, yt_uname)
 VALUES 
   (
     '550e8400-e29b-41d4-a716-446655440001', 
@@ -18,7 +18,13 @@ VALUES
     'budi.santoso@hermes.id', 
     '081234567890', 
     'aktif',
-    '{"badge_number": "B001", "department_code": "IT01", "access_level": 3}'::jsonb
+    'Pengurus',
+    'Rayon 1',
+    'budisantoso',
+    'budi.santoso',
+    'budisantoso_official',
+    'budisantoso',
+    'budisantoso'
   ),
   (
     '550e8400-e29b-41d4-a716-446655440002', 
@@ -28,7 +34,13 @@ VALUES
     'siti.nurhaliza@hermes.id', 
     '081234567891', 
     'aktif',
-    '{"badge_number": "B002", "department_code": "HR01", "access_level": 2}'::jsonb
+    'Anggota',
+    'Rayon 2',
+    'sitinurhaliza',
+    'siti.nurhaliza',
+    'sitinurhaliza_official',
+    'sitinurhaliza',
+    'sitinurhaliza'
   ),
   (
     '550e8400-e29b-41d4-a716-446655440003', 
@@ -38,7 +50,13 @@ VALUES
     'ahmad.dhani@hermes.id', 
     '081234567892', 
     'aktif',
-    '{"badge_number": "B003", "department_code": "FIN01", "access_level": 4}'::jsonb
+    'Ketua',
+    'Rayon 1',
+    'ahmaddhani',
+    'ahmad.dhani',
+    'ahmaddhani_official',
+    'ahmaddhani',
+    'ahmaddhani'
   )
 ON CONFLICT (uuid) DO NOTHING;
 

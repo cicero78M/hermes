@@ -16,7 +16,7 @@ async function initializeDatabase() {
   try {
     console.log('Connected to PostgreSQL database.');
     
-    // Create users table with JSONB for key-value metadata
+    // Create users table with new schema
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -26,11 +26,14 @@ async function initializeDatabase() {
         unit_kerja VARCHAR(255),
         email VARCHAR(255),
         telepon VARCHAR(50),
-        alamat TEXT,
-        tanggal_lahir DATE,
-        tanggal_masuk DATE,
         status VARCHAR(50) DEFAULT 'aktif',
-        additional_data JSONB DEFAULT '{}',
+        pangkat VARCHAR(255),
+        rayon VARCHAR(255),
+        ig_uname VARCHAR(255),
+        fb_uname VARCHAR(255),
+        tt_uname VARCHAR(255),
+        x_uname VARCHAR(255),
+        yt_uname VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -44,7 +47,6 @@ async function initializeDatabase() {
       CREATE INDEX IF NOT EXISTS idx_users_uuid ON users(uuid);
       CREATE INDEX IF NOT EXISTS idx_users_nama ON users(nama);
       CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
-      CREATE INDEX IF NOT EXISTS idx_users_additional_data ON users USING GIN(additional_data);
     `;
     
     await client.query(createIndexes);
@@ -76,27 +78,27 @@ async function initializeDatabase() {
     const count = parseInt(checkData.rows[0].count);
     
     if (count === 0) {
-      // Insert sample data with key-value additional_data
+      // Insert sample data with new fields
       const insertSample = `
-        INSERT INTO users (uuid, nama, jabatan, unit_kerja, email, telepon, status, additional_data)
+        INSERT INTO users (uuid, nama, jabatan, unit_kerja, email, telepon, status, pangkat, rayon, ig_uname, fb_uname, tt_uname, x_uname, yt_uname)
         VALUES 
-          ($1, $2, $3, $4, $5, $6, $7, $8),
-          ($9, $10, $11, $12, $13, $14, $15, $16),
-          ($17, $18, $19, $20, $21, $22, $23, $24)
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14),
+          ($15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28),
+          ($29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42)
       `;
       
       await client.query(insertSample, [
         '550e8400-e29b-41d4-a716-446655440001', 'Budi Santoso', 'Kepala Bagian', 'IT Department', 
-        'budi.santoso@hermes.id', '081234567890', 'aktif', 
-        JSON.stringify({ badge_number: 'B001', department_code: 'IT01', access_level: 3 }),
+        'budi.santoso@hermes.id', '081234567890', 'aktif', 'Pengurus', 'Rayon 1',
+        'budisantoso', 'budi.santoso', 'budisantoso_official', 'budisantoso', 'budisantoso',
         
         '550e8400-e29b-41d4-a716-446655440002', 'Siti Nurhaliza', 'Staff', 'HR Department', 
-        'siti.nurhaliza@hermes.id', '081234567891', 'aktif',
-        JSON.stringify({ badge_number: 'B002', department_code: 'HR01', access_level: 2 }),
+        'siti.nurhaliza@hermes.id', '081234567891', 'aktif', 'Anggota', 'Rayon 2',
+        'sitinurhaliza', 'siti.nurhaliza', 'sitinurhaliza_official', 'sitinurhaliza', 'sitinurhaliza',
         
         '550e8400-e29b-41d4-a716-446655440003', 'Ahmad Dhani', 'Manager', 'Finance Department', 
-        'ahmad.dhani@hermes.id', '081234567892', 'aktif',
-        JSON.stringify({ badge_number: 'B003', department_code: 'FIN01', access_level: 4 })
+        'ahmad.dhani@hermes.id', '081234567892', 'aktif', 'Ketua', 'Rayon 1',
+        'ahmaddhani', 'ahmad.dhani', 'ahmaddhani_official', 'ahmaddhani', 'ahmaddhani'
       ]);
       
       console.log('Sample data inserted successfully.');
