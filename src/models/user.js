@@ -1,67 +1,67 @@
 const db = require('../config/database');
 
 /**
- * Personnel Model
+ * User Model
  */
-class Personnel {
+class User {
   /**
-   * Get all personnel
-   * @returns {Promise<Array>} List of all personnel
+   * Get all users
+   * @returns {Promise<Array>} List of all users
    */
   static async getAll() {
-    const sql = 'SELECT * FROM personnel ORDER BY nama ASC';
+    const sql = 'SELECT * FROM users ORDER BY nama ASC';
     return await db.all(sql);
   }
 
   /**
-   * Get personnel by ID
-   * @param {number} id Personnel ID
-   * @returns {Promise<Object>} Personnel data
+   * Get user by ID
+   * @param {number} id User ID
+   * @returns {Promise<Object>} User data
    */
   static async getById(id) {
-    const sql = 'SELECT * FROM personnel WHERE id = $1';
+    const sql = 'SELECT * FROM users WHERE id = $1';
     return await db.get(sql, [id]);
   }
 
   /**
-   * Get personnel by NIP
-   * @param {string} nip Personnel NIP
-   * @returns {Promise<Object>} Personnel data
+   * Get user by UUID
+   * @param {string} uuid User UUID
+   * @returns {Promise<Object>} User data
    */
-  static async getByNip(nip) {
-    const sql = 'SELECT * FROM personnel WHERE nip = $1';
-    return await db.get(sql, [nip]);
+  static async getByUuid(uuid) {
+    const sql = 'SELECT * FROM users WHERE uuid = $1';
+    return await db.get(sql, [uuid]);
   }
 
   /**
-   * Search personnel by name
-   * @param {string} name Personnel name
-   * @returns {Promise<Array>} List of personnel matching the name
+   * Search users by name
+   * @param {string} name User name
+   * @returns {Promise<Array>} List of users matching the name
    */
   static async searchByName(name) {
-    const sql = 'SELECT * FROM personnel WHERE nama ILIKE $1 ORDER BY nama ASC';
+    const sql = 'SELECT * FROM users WHERE nama ILIKE $1 ORDER BY nama ASC';
     return await db.all(sql, [`%${name}%`]);
   }
 
   /**
-   * Get personnel by status
-   * @param {string} status Personnel status (aktif/non-aktif)
-   * @returns {Promise<Array>} List of personnel with the specified status
+   * Get users by status
+   * @param {string} status User status (aktif/non-aktif)
+   * @returns {Promise<Array>} List of users with the specified status
    */
   static async getByStatus(status) {
-    const sql = 'SELECT * FROM personnel WHERE status = $1 ORDER BY nama ASC';
+    const sql = 'SELECT * FROM users WHERE status = $1 ORDER BY nama ASC';
     return await db.all(sql, [status]);
   }
 
   /**
-   * Create new personnel
-   * @param {Object} data Personnel data
-   * @returns {Promise<Object>} Created personnel ID
+   * Create new user
+   * @param {Object} data User data
+   * @returns {Promise<Object>} Created user ID
    */
   static async create(data) {
     const sql = `
-      INSERT INTO personnel (
-        nip, nama, jabatan, unit_kerja, email, telepon, 
+      INSERT INTO users (
+        uuid, nama, jabatan, unit_kerja, email, telepon, 
         alamat, tanggal_lahir, tanggal_masuk, status, additional_data
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
@@ -72,7 +72,7 @@ class Personnel {
     const additionalData = data.additional_data || {};
     
     const params = [
-      data.nip,
+      data.uuid,
       data.nama,
       data.jabatan || null,
       data.unit_kerja || null,
@@ -90,15 +90,15 @@ class Personnel {
   }
 
   /**
-   * Update personnel
-   * @param {number} id Personnel ID
-   * @param {Object} data Personnel data to update
+   * Update user
+   * @param {number} id User ID
+   * @param {Object} data User data to update
    * @returns {Promise<Object>} Update result
    */
   static async update(id, data) {
     const sql = `
-      UPDATE personnel
-      SET nip = $1,
+      UPDATE users
+      SET uuid = $1,
           nama = $2,
           jabatan = $3,
           unit_kerja = $4,
@@ -116,7 +116,7 @@ class Personnel {
     const additionalData = data.additional_data || {};
     
     const params = [
-      data.nip,
+      data.uuid,
       data.nama,
       data.jabatan || null,
       data.unit_kerja || null,
@@ -135,25 +135,25 @@ class Personnel {
   }
 
   /**
-   * Delete personnel
-   * @param {number} id Personnel ID
+   * Delete user
+   * @param {number} id User ID
    * @returns {Promise<Object>} Delete result
    */
   static async delete(id) {
-    const sql = 'DELETE FROM personnel WHERE id = $1';
+    const sql = 'DELETE FROM users WHERE id = $1';
     await db.query(sql, [id]);
     return { changes: 1 };
   }
 
   /**
-   * Search personnel by key-value in additional_data
+   * Search users by key-value in additional_data
    * @param {string} key Key in additional_data JSONB field
    * @param {any} value Value to search for
-   * @returns {Promise<Array>} List of personnel matching the criteria
+   * @returns {Promise<Array>} List of users matching the criteria
    */
   static async searchByAdditionalData(key, value) {
     const sql = `
-      SELECT * FROM personnel 
+      SELECT * FROM users 
       WHERE additional_data->$1 = $2
       ORDER BY nama ASC
     `;
@@ -162,14 +162,14 @@ class Personnel {
 
   /**
    * Update specific key-value in additional_data
-   * @param {number} id Personnel ID
+   * @param {number} id User ID
    * @param {string} key Key to update
    * @param {any} value New value
    * @returns {Promise<Object>} Update result
    */
   static async updateAdditionalDataKey(id, key, value) {
     const sql = `
-      UPDATE personnel
+      UPDATE users
       SET additional_data = jsonb_set(additional_data, $1::text[], $2::jsonb)
       WHERE id = $3
     `;
@@ -178,4 +178,4 @@ class Personnel {
   }
 }
 
-module.exports = Personnel;
+module.exports = User;

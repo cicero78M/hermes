@@ -1,211 +1,211 @@
-const Personnel = require('../models/personnel');
+const User = require('../models/user');
 
 /**
- * Personnel Controller
+ * User Controller
  */
-class PersonnelController {
+class UserController {
   /**
-   * Get all personnel
+   * Get all users
    */
   static async getAll(req, res) {
     try {
-      const personnel = await Personnel.getAll();
+      const users = await User.getAll();
       res.json({
         success: true,
-        data: personnel,
-        count: personnel.length
+        data: users,
+        count: users.length
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error fetching personnel',
+        message: 'Error fetching users',
         error: error.message
       });
     }
   }
 
   /**
-   * Get personnel by ID
+   * Get user by ID
    */
   static async getById(req, res) {
     try {
       const { id } = req.params;
-      const personnel = await Personnel.getById(id);
+      const user = await User.getById(id);
       
-      if (!personnel) {
+      if (!user) {
         return res.status(404).json({
           success: false,
-          message: 'Personnel not found'
+          message: 'User not found'
         });
       }
 
       res.json({
         success: true,
-        data: personnel
+        data: user
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error fetching personnel',
+        message: 'Error fetching user',
         error: error.message
       });
     }
   }
 
   /**
-   * Search personnel
+   * Search users
    */
   static async search(req, res) {
     try {
       const { query, status } = req.query;
-      let personnel;
+      let users;
 
       if (query) {
-        personnel = await Personnel.searchByName(query);
+        users = await User.searchByName(query);
       } else if (status) {
-        personnel = await Personnel.getByStatus(status);
+        users = await User.getByStatus(status);
       } else {
-        personnel = await Personnel.getAll();
+        users = await User.getAll();
       }
 
       res.json({
         success: true,
-        data: personnel,
-        count: personnel.length
+        data: users,
+        count: users.length
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error searching personnel',
+        message: 'Error searching users',
         error: error.message
       });
     }
   }
 
   /**
-   * Create new personnel
+   * Create new user
    */
   static async create(req, res) {
     try {
-      const { nip, nama } = req.body;
+      const { uuid, nama } = req.body;
 
       // Validate required fields
-      if (!nip || !nama) {
+      if (!uuid || !nama) {
         return res.status(400).json({
           success: false,
-          message: 'NIP and nama are required'
+          message: 'UUID and nama are required'
         });
       }
 
-      // Check if NIP already exists
-      const existing = await Personnel.getByNip(nip);
+      // Check if UUID already exists
+      const existing = await User.getByUuid(uuid);
       if (existing) {
         return res.status(409).json({
           success: false,
-          message: 'Personnel with this NIP already exists'
+          message: 'User with this UUID already exists'
         });
       }
 
-      const result = await Personnel.create(req.body);
-      const newPersonnel = await Personnel.getById(result.id);
+      const result = await User.create(req.body);
+      const newUser = await User.getById(result.id);
 
       res.status(201).json({
         success: true,
-        message: 'Personnel created successfully',
-        data: newPersonnel
+        message: 'User created successfully',
+        data: newUser
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error creating personnel',
+        message: 'Error creating user',
         error: error.message
       });
     }
   }
 
   /**
-   * Update personnel
+   * Update user
    */
   static async update(req, res) {
     try {
       const { id } = req.params;
-      const { nip, nama } = req.body;
+      const { uuid, nama } = req.body;
 
-      // Check if personnel exists
-      const existing = await Personnel.getById(id);
+      // Check if user exists
+      const existing = await User.getById(id);
       if (!existing) {
         return res.status(404).json({
           success: false,
-          message: 'Personnel not found'
+          message: 'User not found'
         });
       }
 
       // Validate required fields
-      if (!nip || !nama) {
+      if (!uuid || !nama) {
         return res.status(400).json({
           success: false,
-          message: 'NIP and nama are required'
+          message: 'UUID and nama are required'
         });
       }
 
-      // Check if NIP is being changed and if new NIP already exists
-      if (nip !== existing.nip) {
-        const nipExists = await Personnel.getByNip(nip);
-        if (nipExists) {
+      // Check if UUID is being changed and if new UUID already exists
+      if (uuid !== existing.uuid) {
+        const uuidExists = await User.getByUuid(uuid);
+        if (uuidExists) {
           return res.status(409).json({
             success: false,
-            message: 'Personnel with this NIP already exists'
+            message: 'User with this UUID already exists'
           });
         }
       }
 
-      await Personnel.update(id, req.body);
-      const updatedPersonnel = await Personnel.getById(id);
+      await User.update(id, req.body);
+      const updatedUser = await User.getById(id);
 
       res.json({
         success: true,
-        message: 'Personnel updated successfully',
-        data: updatedPersonnel
+        message: 'User updated successfully',
+        data: updatedUser
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error updating personnel',
+        message: 'Error updating user',
         error: error.message
       });
     }
   }
 
   /**
-   * Delete personnel
+   * Delete user
    */
   static async delete(req, res) {
     try {
       const { id } = req.params;
 
-      // Check if personnel exists
-      const existing = await Personnel.getById(id);
+      // Check if user exists
+      const existing = await User.getById(id);
       if (!existing) {
         return res.status(404).json({
           success: false,
-          message: 'Personnel not found'
+          message: 'User not found'
         });
       }
 
-      await Personnel.delete(id);
+      await User.delete(id);
 
       res.json({
         success: true,
-        message: 'Personnel deleted successfully'
+        message: 'User deleted successfully'
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Error deleting personnel',
+        message: 'Error deleting user',
         error: error.message
       });
     }
   }
 }
 
-module.exports = PersonnelController;
+module.exports = UserController;

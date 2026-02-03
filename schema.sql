@@ -1,15 +1,15 @@
--- PostgreSQL Schema for Hermes Personnel Database
--- Version: 1.0.0
--- Description: Complete database schema for personnel management system
+-- PostgreSQL Schema for Hermes User Database
+-- Version: 2.0.0
+-- Description: Complete database schema for user management system
 
 -- ============================================================================
--- TABLE: personnel
--- Description: Main table for storing personnel/employee information
+-- TABLE: users
+-- Description: Main table for storing user information
 -- ============================================================================
 
-CREATE TABLE IF NOT EXISTS personnel (
+CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
-  nip VARCHAR(50) UNIQUE NOT NULL,
+  uuid VARCHAR(50) UNIQUE NOT NULL,
   nama VARCHAR(255) NOT NULL,
   jabatan VARCHAR(255),
   unit_kerja VARCHAR(255),
@@ -30,12 +30,12 @@ CREATE TABLE IF NOT EXISTS personnel (
 -- ============================================================================
 
 -- B-tree indexes for frequently searched columns
-CREATE INDEX IF NOT EXISTS idx_personnel_nip ON personnel(nip);
-CREATE INDEX IF NOT EXISTS idx_personnel_nama ON personnel(nama);
-CREATE INDEX IF NOT EXISTS idx_personnel_status ON personnel(status);
+CREATE INDEX IF NOT EXISTS idx_users_uuid ON users(uuid);
+CREATE INDEX IF NOT EXISTS idx_users_nama ON users(nama);
+CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
 
 -- GIN index for JSONB field (additional_data) for efficient JSON queries
-CREATE INDEX IF NOT EXISTS idx_personnel_additional_data ON personnel USING GIN(additional_data);
+CREATE INDEX IF NOT EXISTS idx_users_additional_data ON users USING GIN(additional_data);
 
 -- ============================================================================
 -- FUNCTIONS
@@ -57,10 +57,10 @@ $$ language 'plpgsql';
 -- ============================================================================
 
 -- Trigger to update updated_at column on every UPDATE
-DROP TRIGGER IF EXISTS update_personnel_updated_at ON personnel;
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 
-CREATE TRIGGER update_personnel_updated_at
-  BEFORE UPDATE ON personnel
+CREATE TRIGGER update_users_updated_at
+  BEFORE UPDATE ON users
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
@@ -69,18 +69,18 @@ CREATE TRIGGER update_personnel_updated_at
 -- Description: Table and column documentation
 -- ============================================================================
 
-COMMENT ON TABLE personnel IS 'Main personnel/employee information table';
-COMMENT ON COLUMN personnel.id IS 'Primary key, auto-incrementing';
-COMMENT ON COLUMN personnel.nip IS 'Nomor Induk Pegawai (Employee ID Number), must be unique';
-COMMENT ON COLUMN personnel.nama IS 'Full name of the employee';
-COMMENT ON COLUMN personnel.jabatan IS 'Job title/position';
-COMMENT ON COLUMN personnel.unit_kerja IS 'Work unit/department';
-COMMENT ON COLUMN personnel.email IS 'Email address';
-COMMENT ON COLUMN personnel.telepon IS 'Phone number';
-COMMENT ON COLUMN personnel.alamat IS 'Full address';
-COMMENT ON COLUMN personnel.tanggal_lahir IS 'Date of birth';
-COMMENT ON COLUMN personnel.tanggal_masuk IS 'Date joined/hired';
-COMMENT ON COLUMN personnel.status IS 'Employment status (aktif/non-aktif)';
-COMMENT ON COLUMN personnel.additional_data IS 'JSONB field for flexible key-value metadata (badge_number, access_level, skills, etc.)';
-COMMENT ON COLUMN personnel.created_at IS 'Record creation timestamp';
-COMMENT ON COLUMN personnel.updated_at IS 'Record last update timestamp (auto-updated by trigger)';
+COMMENT ON TABLE users IS 'Main user information table';
+COMMENT ON COLUMN users.id IS 'Primary key, auto-incrementing';
+COMMENT ON COLUMN users.uuid IS 'Unique user identifier (UUID format), must be unique';
+COMMENT ON COLUMN users.nama IS 'Full name of the user';
+COMMENT ON COLUMN users.jabatan IS 'Job title/position';
+COMMENT ON COLUMN users.unit_kerja IS 'Work unit/department';
+COMMENT ON COLUMN users.email IS 'Email address';
+COMMENT ON COLUMN users.telepon IS 'Phone number';
+COMMENT ON COLUMN users.alamat IS 'Full address';
+COMMENT ON COLUMN users.tanggal_lahir IS 'Date of birth';
+COMMENT ON COLUMN users.tanggal_masuk IS 'Date joined/hired';
+COMMENT ON COLUMN users.status IS 'Status (active/inactive)';
+COMMENT ON COLUMN users.additional_data IS 'JSONB field for flexible key-value metadata (badge_number, access_level, skills, etc.)';
+COMMENT ON COLUMN users.created_at IS 'Record creation timestamp';
+COMMENT ON COLUMN users.updated_at IS 'Record last update timestamp (auto-updated by trigger)';

@@ -21,10 +21,13 @@ npm install pg
 
 ### 3. Schema Changes
 
-#### Tabel Personnel - Perubahan Field
+#### Tabel Users - Perubahan Field
 
 **Field Baru:**
 - `additional_data` - JSONB field untuk menyimpan metadata key-value
+
+**Perubahan Field:**
+- `nip` → `uuid` - Changed from NIP to UUID identifier
 
 **Perubahan Tipe Data:**
 - `id`: INTEGER AUTOINCREMENT → SERIAL PRIMARY KEY
@@ -57,7 +60,7 @@ DB_PASSWORD=postgres
 'SELECT * FROM personnel WHERE id = ?'
 
 // PostgreSQL (New)
-'SELECT * FROM personnel WHERE id = $1'
+'SELECT * FROM users WHERE id = $1'
 ```
 
 #### LIKE Queries
@@ -66,13 +69,13 @@ DB_PASSWORD=postgres
 'SELECT * FROM personnel WHERE nama LIKE ?'
 
 // PostgreSQL (New)
-'SELECT * FROM personnel WHERE nama ILIKE $1'  // Case-insensitive
+'SELECT * FROM users WHERE nama ILIKE $1'  // Case-insensitive
 ```
 
 #### Returning Values
 ```javascript
 // PostgreSQL requires RETURNING clause
-INSERT INTO personnel (...) VALUES (...) RETURNING id
+INSERT INTO users (...) VALUES (...) RETURNING id
 ```
 
 ## Fitur Baru: Key-Value Metadata
@@ -86,7 +89,7 @@ Field `additional_data` memungkinkan penyimpanan metadata fleksibel tanpa perlu 
 **1. Create dengan metadata:**
 ```javascript
 {
-  "nip": "123456",
+  "uuid": "550e8400-e29b-41d4-a716-446655440001",
   "nama": "John Doe",
   ...
   "additional_data": {
@@ -100,14 +103,14 @@ Field `additional_data` memungkinkan penyimpanan metadata fleksibel tanpa perlu 
 
 **2. Query berdasarkan key-value:**
 ```javascript
-// Cari personnel dengan access_level = 3
-Personnel.searchByAdditionalData('access_level', 3)
+// Cari user dengan access_level = 3
+User.searchByAdditionalData('access_level', 3)
 ```
 
 **3. Update key tertentu:**
 ```javascript
 // Update hanya access_level tanpa mengubah data lain
-Personnel.updateAdditionalDataKey(1, 'access_level', 4)
+User.updateAdditionalDataKey(1, 'access_level', 4)
 ```
 
 ### Keuntungan JSONB:
@@ -162,7 +165,7 @@ Jika memiliki data dari SQLite, export dan import ke PostgreSQL:
 sqlite3 -csv personnel.db "SELECT * FROM personnel;" > personnel_data.csv
 
 # Import ke PostgreSQL
-psql -U postgres -d hermes_db -c "\COPY personnel(nip, nama, jabatan, unit_kerja, email, telepon, alamat, tanggal_lahir, tanggal_masuk, status, additional_data) FROM 'personnel_data.csv' WITH CSV HEADER;"
+psql -U postgres -d hermes_db -c "\COPY users(uuid, nama, jabatan, unit_kerja, email, telepon, alamat, tanggal_lahir, tanggal_masuk, status, additional_data) FROM 'personnel_data.csv' WITH CSV HEADER;"
 ```
 
 ## Testing
@@ -174,11 +177,11 @@ Semua endpoint telah ditest dan berfungsi dengan PostgreSQL:
 npm start
 
 # Test endpoints
-curl http://localhost:3000/api/personnel
-curl http://localhost:3000/api/personnel/1
-curl -X POST http://localhost:3000/api/personnel \
+curl http://localhost:3000/api/users
+curl http://localhost:3000/api/users/1
+curl -X POST http://localhost:3000/api/users \
   -H "Content-Type: application/json" \
-  -d '{"nip":"123","nama":"Test","additional_data":{"key":"value"}}'
+  -d '{"uuid":"550e8400-e29b-41d4-a716-446655440001","nama":"Test","additional_data":{"key":"value"}}'
 ```
 
 ## Performance Improvements
@@ -190,7 +193,7 @@ PostgreSQL menggunakan connection pooling untuk performa yang lebih baik:
 - Connection timeout: 2s
 
 ### Indexing
-- B-tree indexes untuk NIP, nama, status
+- B-tree indexes untuk UUID, nama, status
 - GIN index untuk JSONB field
 - Auto-vacuum untuk maintenance
 
@@ -219,7 +222,7 @@ Jika perlu rollback ke SQLite:
 1. Install sqlite3: `npm install sqlite3`
 2. Restore `src/config/database.js` dari commit sebelumnya
 3. Restore `src/database/init.js` dari commit sebelumnya
-4. Update `src/models/personnel.js` (parameter placeholders)
+4. Restore old personnel model and rename tables back
 5. Update `.env` dengan `DB_PATH`
 
 ## Support

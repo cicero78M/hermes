@@ -1,33 +1,33 @@
 # API Testing Examples
 
-Berikut adalah contoh penggunaan API Personnel Database menggunakan curl.
+Berikut adalah contoh penggunaan API User Database menggunakan curl.
 
-## 1. Get All Personnel
+## 1. Get All Users
 ```bash
-curl http://localhost:3000/api/personnel
+curl http://localhost:3000/api/users
 ```
 
-## 2. Get Personnel by ID
+## 2. Get User by ID
 ```bash
-curl http://localhost:3000/api/personnel/1
+curl http://localhost:3000/api/users/1
 ```
 
-## 3. Search Personnel by Name
+## 3. Search Users by Name
 ```bash
-curl "http://localhost:3000/api/personnel?query=Budi"
+curl "http://localhost:3000/api/users?query=Budi"
 ```
 
-## 4. Filter Personnel by Status
+## 4. Filter Users by Status
 ```bash
-curl "http://localhost:3000/api/personnel?status=aktif"
+curl "http://localhost:3000/api/users?status=aktif"
 ```
 
-## 5. Create New Personnel
+## 5. Create New User
 ```bash
-curl -X POST http://localhost:3000/api/personnel \
+curl -X POST http://localhost:3000/api/users \
   -H "Content-Type: application/json" \
   -d '{
-    "nip": "199505102020012004",
+    "uuid": "550e8400-e29b-41d4-a716-446655440004",
     "nama": "Dewi Lestari",
     "jabatan": "Staff",
     "unit_kerja": "Marketing Department",
@@ -47,12 +47,12 @@ curl -X POST http://localhost:3000/api/personnel \
   }'
 ```
 
-## 6. Update Personnel
+## 6. Update User
 ```bash
-curl -X PUT http://localhost:3000/api/personnel/4 \
+curl -X PUT http://localhost:3000/api/users/4 \
   -H "Content-Type: application/json" \
   -d '{
-    "nip": "199505102020012004",
+    "uuid": "550e8400-e29b-41d4-a716-446655440004",
     "nama": "Dewi Lestari",
     "jabatan": "Senior Staff",
     "unit_kerja": "Marketing Department",
@@ -72,9 +72,9 @@ curl -X PUT http://localhost:3000/api/personnel/4 \
   }'
 ```
 
-## 7. Delete Personnel
+## 7. Delete User
 ```bash
-curl -X DELETE http://localhost:3000/api/personnel/4
+curl -X DELETE http://localhost:3000/api/users/4
 ```
 
 ## Response Examples
@@ -86,7 +86,7 @@ curl -X DELETE http://localhost:3000/api/personnel/4
   "data": [
     {
       "id": 1,
-      "nip": "198001012010011001",
+      "uuid": "550e8400-e29b-41d4-a716-446655440001",
       "nama": "Budi Santoso",
       "jabatan": "Kepala Bagian",
       "unit_kerja": "IT Department",
@@ -115,7 +115,7 @@ curl -X DELETE http://localhost:3000/api/personnel/4
   "success": true,
   "data": {
     "id": 1,
-    "nip": "198001012010011001",
+    "uuid": "550e8400-e29b-41d4-a716-446655440001",
     "nama": "Budi Santoso",
     "jabatan": "Kepala Bagian",
     "unit_kerja": "IT Department",
@@ -140,7 +140,7 @@ curl -X DELETE http://localhost:3000/api/personnel/4
 ```json
 {
   "success": false,
-  "message": "Personnel not found"
+  "message": "User not found"
 }
 ```
 
@@ -148,7 +148,7 @@ curl -X DELETE http://localhost:3000/api/personnel/4
 ```json
 {
   "success": false,
-  "message": "NIP and nama are required"
+  "message": "UUID and nama are required"
 }
 ```
 
@@ -156,7 +156,7 @@ curl -X DELETE http://localhost:3000/api/personnel/4
 ```json
 {
   "success": false,
-  "message": "Personnel with this NIP already exists"
+  "message": "User with this UUID already exists"
 }
 ```
 
@@ -164,7 +164,7 @@ curl -X DELETE http://localhost:3000/api/personnel/4
 
 Anda juga dapat mengimport collection berikut ke Postman untuk testing yang lebih mudah:
 
-1. Import URL: `http://localhost:3000/api/personnel`
+1. Import URL: `http://localhost:3000/api/users`
 2. Buat request untuk setiap endpoint
 3. Atur Content-Type header ke `application/json` untuk POST dan PUT requests
 4. Tambahkan body JSON sesuai dengan contoh di atas
